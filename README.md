@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
   modImplementation "maven.modrinth:stonecutter_recipe_tags:<version>"
+  include "maven.modrinth:stonecutter_recipe_tags:<version>"
 }
 ```
 Replace `<version>` with the latest version number found on [the mod page](https://modrinth.com/mod/stonecutter_recipe_tags).
