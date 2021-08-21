@@ -1,34 +1,30 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "stonecutter_recipe_tags",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Stonecutter Recipe Tags",
+  "description": "Allows for creation of stonecutter recipes with tags, saving on JSON files.",
   "authors": [
-    "Me!"
+    "Tropheus Jay"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/TropheusJ/stonecutter-recipe-tags"
   },
   "license": "MIT",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/stonecutter_recipe_tags/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.fabricmc.example.ExampleMod"
+      "com.tropheus_jay.stonecutter_recipe_tags.StonecutterRecipeTags"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "stonecutter_recipe_tags.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.11.6",
     "fabric": "*",
-    "minecraft": "1.17.x",
+    "minecraft": ">=1.17.1",
     "java": ">=16"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

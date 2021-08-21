@@ -14,7 +14,7 @@ reducedDebugInfo:false
 snooperEnabled:true
 showSubtitles:false
 touchscreen:false
-fullscreen:true
+fullscreen:false
 bobView:true
 toggleCrouch:false
 toggleSprint:false
@@ -24,7 +24,7 @@ fov:0.0
 screenEffectScale:1.0
 fovEffectScale:1.0
 gamma:1.0
-renderDistance:12
+renderDistance:2
 entityDistanceScaling:5.0
 guiScale:3
 particles:0
@@ -59,7 +59,7 @@ useNativeTransport:true
 mainHand:right
 attackIndicator:1
 narrator:0
-tutorialStep:movement
+tutorialStep:none
 mouseWheelSensitivity:1.0
 rawMouseInput:true
 glDebugVerbosity:1
