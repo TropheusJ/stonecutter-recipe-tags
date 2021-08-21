@@ -9,7 +9,17 @@ file counts and reducing lag.
 
 ## Use
 #### Setup
-To get started, add this mod to your development environment. (TODO)<br>
+To get started, add this mod to your development environment.
+```groovy
+repositories {
+  maven {url = "https://api.modrinth.com/maven"}
+}
+
+dependencies {
+  modImplementation "maven.modrinth:stonecutter_recipe_tags:<version>"
+}
+```
+Replace `<version>` with the latest version number found on [the mod page](https://modrinth.com/mod/stonecutter_recipe_tags).
 #### Basics
 `StonecutterRecipeTagHandler` is where all the magic happens. However,
 most of the time you won't even need to touch it. To create a recipe tag,
@@ -18,7 +28,7 @@ should be named `stonecutter_recipes`. File structure should look something like
 `resources/data/modid/tags/items/stonecutter_recipes/`<br>
 Any tag inside this folder will automatically be registered as a recipe tag.<br>
 **Note: Tag recipes and regular recipes cannot coexist for one item. Tag recipes
-will override regular ones.**
+will override regular ones.** This *may* be changed in a later version.
 #### Item Counts
 Every item has a count associated with it used in crafting. This number should
 be how many of this item is needed for one block to be made. For example,
