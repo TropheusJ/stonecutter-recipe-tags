@@ -1,6 +1,6 @@
 package com.tropheus_jay.stonecutter_recipe_tags.mixin;
 
-import com.tropheus_jay.stonecutter_recipe_tags.StonecutterTagRecipeHandler;
+import com.tropheus_jay.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
 
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,10 +20,10 @@ public class StonecutterScreenHandlerOutputSlotMixin {
 	@ModifyConstant(method = "onTakeItem", constant = @Constant(intValue = 1))
 	private int stonecutterRecipeTags$redirectIntToShrinkInput(int original) {
 		ItemStack inputStack = field_17639.input.getStack(0);
-		int toTake = StonecutterTagRecipeHandler.getItemCraftCount(inputStack);
+		int toTake = StonecutterRecipeTagHandler.getItemCraftCount(inputStack);
 		if (toTake > inputStack.getCount()) {
 			return 0;
 		}
-		return StonecutterTagRecipeHandler.getItemCraftCount(inputStack.getItem());
+		return StonecutterRecipeTagHandler.getItemCraftCount(inputStack.getItem());
 	}
 }

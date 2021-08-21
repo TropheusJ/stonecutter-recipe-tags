@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.tropheus_jay.stonecutter_recipe_tags.StonecutterScreenHandlerExtensions;
 
-import com.tropheus_jay.stonecutter_recipe_tags.StonecutterTagRecipeHandler;
+import com.tropheus_jay.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -65,8 +65,8 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	private void stonecutterRecipeTags$updateInput(Inventory input, ItemStack stack, CallbackInfo ci) {
 		recipes = new ArrayList<>();
 		if (!stack.isEmpty()) {
-			List<Tag<Item>> tags = StonecutterTagRecipeHandler.getRecipeTags(stack);
-			if (!tags.isEmpty() && StonecutterTagRecipeHandler.getItemCraftCount(stack) <= stack.getCount()) {
+			List<Tag<Item>> tags = StonecutterRecipeTagHandler.getRecipeTags(stack);
+			if (!tags.isEmpty() && StonecutterRecipeTagHandler.getItemCraftCount(stack) <= stack.getCount()) {
 				List<Item> items = new ArrayList<>();
 				for (Tag<Item> tag : tags) {
 					for (Item item : tag.values()) {
@@ -98,7 +98,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	@Inject(at = @At("HEAD"), method = "onButtonClick", cancellable = true)
 	private void stonecutterRecipeTags$onButtonClick(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> cir) {
 		if (tagRecipeMode()) {
-			int required = StonecutterTagRecipeHandler.getItemCraftCount(inputSlot.getStack());
+			int required = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
 			if (inputSlot.getStack().getCount() >= required) {
 				if (isInBounds(id)) {
 					this.selectedRecipe.set(id);
@@ -115,9 +115,9 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		// itemStack is new item
 		boolean differentItem = !itemStack.isOf(inputStack.getItem());
 		int lastCount = inputStack.getCount();
-		int lastRequiredCount = StonecutterTagRecipeHandler.getItemCraftCount(inputSlot.getStack());
+		int lastRequiredCount = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
 		int newCount = itemStack.getCount();
-		int newRequiredCount = StonecutterTagRecipeHandler.getItemCraftCount(itemStack);
+		int newRequiredCount = StonecutterRecipeTagHandler.getItemCraftCount(itemStack);
 		boolean nowMeetsCountRequirement = lastCount < lastRequiredCount && newCount >= newRequiredCount;
 		boolean noLongerMeetsCountRequirement = newCount < newRequiredCount && lastCount >= lastRequiredCount;
 		return !(differentItem || nowMeetsCountRequirement || noLongerMeetsCountRequirement); // redirected method is inverted, invert here to make it Good:tm:
@@ -126,10 +126,10 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	@Inject(at = @At("HEAD"), method = "populateResult", cancellable = true)
 	private void stonecutterRecipeTags$populateResult(CallbackInfo ci) {
 		if (tagRecipeMode()) {
-			int neededCount = StonecutterTagRecipeHandler.getItemCraftCount(inputSlot.getStack());
+			int neededCount = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
 			if (!this.recipes.isEmpty() && inputSlot.getStack().getCount() >= neededCount) {
 				ItemStack stack = recipes.get(selectedRecipe.get()).copy();
-				stack.setCount(StonecutterTagRecipeHandler.getItemCraftCount(stack.getItem()));
+				stack.setCount(StonecutterRecipeTagHandler.getItemCraftCount(stack.getItem()));
 				outputSlot.setStack(stack);
 			} else {
 				recipes.clear();

@@ -13,10 +13,10 @@ public class StonecutterRecipeTags implements ModInitializer {
 	}
 
 	public void handleDataPackReload(ResourceManager resourceManager) {
-		StonecutterTagRecipeHandler.ALL_STONECUTTER_TAGS.clear();
+		StonecutterRecipeTagHandler.ALL_STONECUTTER_TAGS.clear();
 		for (Identifier id : resourceManager.findResources("tags/items/stonecutter_recipes", path -> path.endsWith(".json"))) {
-			StonecutterTagRecipeHandler.VALID = false;
-			StonecutterTagRecipeHandler.TAGS_TO_ADD.add(id);
+			StonecutterRecipeTagHandler.VALID = false;
+			StonecutterRecipeTagHandler.TAGS_TO_ADD.add(id);
 		}
 	}
 }

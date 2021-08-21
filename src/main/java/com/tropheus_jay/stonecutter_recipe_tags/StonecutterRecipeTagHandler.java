@@ -18,7 +18,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
-public class StonecutterTagRecipeHandler {
+public class StonecutterRecipeTagHandler {
 	static final Set<Tag<Item>> ALL_STONECUTTER_TAGS = new HashSet<>();
 	private static final Map<Item, Integer> COUNT_CACHE = new HashMap<>();
 	static boolean VALID = true;
@@ -58,7 +58,7 @@ public class StonecutterTagRecipeHandler {
 	}
 
 	/**
-	 * @see StonecutterTagRecipeHandler#getItemCraftCount(Item)
+	 * @see StonecutterRecipeTagHandler#getItemCraftCount(Item)
 	 */
 	public static List<Tag<Item>> getRecipeTags(ItemStack stack) {
 		return getRecipeTags(stack.getItem());
@@ -78,11 +78,11 @@ public class StonecutterTagRecipeHandler {
 
 	/**
 	 * Get the required amount of items needed to craft this item.<br>
-	 * Amount is retrieved from {@link StonecutterTagRecipeHandler#COUNT_CACHE}.
+	 * Amount is retrieved from {@link StonecutterRecipeTagHandler#COUNT_CACHE}.
 	 * If no value is found, slabs return 2, while all other items return 1.
 	 * @param item The item to check
 	 * @return The amount needed
-	 * @see StonecutterTagRecipeHandler#registerItemCraftCount(Item, int)
+	 * @see StonecutterRecipeTagHandler#registerItemCraftCount(Item, int)
 	 */
 	public static int getItemCraftCount(Item item) {
 		Integer count = COUNT_CACHE.get(item);
@@ -97,7 +97,7 @@ public class StonecutterTagRecipeHandler {
 	}
 
 	/**
-	 * @see StonecutterTagRecipeHandler#getItemCraftCount(Item)
+	 * @see StonecutterRecipeTagHandler#getItemCraftCount(Item)
 	 */
 	public static int getItemCraftCount(ItemStack stack) {
 		return getItemCraftCount(stack.getItem());
@@ -110,6 +110,7 @@ public class StonecutterTagRecipeHandler {
 		for (Identifier id : TAGS_TO_ADD) {
 			register(id);
 		}
+		TAGS_TO_ADD.clear();
 		VALID = true;
 	}
 
