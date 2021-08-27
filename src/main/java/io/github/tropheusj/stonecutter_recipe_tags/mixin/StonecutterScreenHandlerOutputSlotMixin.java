@@ -1,6 +1,6 @@
-package com.tropheus_jay.stonecutter_recipe_tags.mixin;
+package io.github.tropheusj.stonecutter_recipe_tags.mixin;
 
-import com.tropheus_jay.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
+import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
 
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;

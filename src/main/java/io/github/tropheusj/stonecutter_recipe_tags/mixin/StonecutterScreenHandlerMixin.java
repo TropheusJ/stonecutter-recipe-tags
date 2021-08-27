@@ -1,12 +1,16 @@
-package com.tropheus_jay.stonecutter_recipe_tags.mixin;
+package io.github.tropheusj.stonecutter_recipe_tags.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.tropheus_jay.stonecutter_recipe_tags.StonecutterScreenHandlerExtensions;
+import io.github.tropheusj.stonecutter_recipe_tags.StonecutterScreenHandlerExtensions;
 
-import com.tropheus_jay.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
+import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
+
+import net.minecraft.recipe.RecipeType;
+
+import net.minecraft.world.World;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -34,7 +38,7 @@ import net.minecraft.tag.Tag;
 @Mixin(StonecutterScreenHandler.class)
 public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implements StonecutterScreenHandlerExtensions {
 	@Unique
-	private List<ItemStack> recipes = new ArrayList<>();
+	private List<ItemStack> stacksToDisplay = new ArrayList<>();
 	@Shadow
 	@Final
 	Slot outputSlot;
@@ -46,8 +50,6 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	private Property selectedRecipe;
 	@Shadow
 	private List<StonecuttingRecipe> availableRecipes;
-	@Unique
-	private boolean tagRecipeMode = false;
 	@Shadow
 	private ItemStack inputStack;
 
@@ -61,12 +63,16 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	@Shadow
 	abstract void populateResult();
 
+	@Shadow
+	@Final
+	private World world;
+
 	@Inject(at = @At("HEAD"), method = "updateInput", cancellable = true)
 	private void stonecutterRecipeTags$updateInput(Inventory input, ItemStack stack, CallbackInfo ci) {
-		recipes = new ArrayList<>();
+		stacksToDisplay = new ArrayList<>();
 		if (!stack.isEmpty()) {
 			List<Tag<Item>> tags = StonecutterRecipeTagHandler.getRecipeTags(stack);
-			if (!tags.isEmpty() && StonecutterRecipeTagHandler.getItemCraftCount(stack) <= stack.getCount()) {
+			if (StonecutterRecipeTagHandler.getItemCraftCount(stack) <= stack.getCount()) {
 				List<Item> items = new ArrayList<>();
 				for (Tag<Item> tag : tags) {
 					for (Item item : tag.values()) {
@@ -75,38 +81,37 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 						}
 					}
 				}
-				recipes = items.stream().map(ItemStack::new).toList();
-				tagRecipeMode = true;
-				availableRecipes.clear();
+				availableRecipes = world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, input, world);
+				List<ItemStack> intermediateList = items.stream().map(ItemStack::new).toList();
+				stacksToDisplay.addAll(intermediateList);
+				availableRecipes.forEach(recipe -> {
+					ItemStack toAdd = recipe.getOutput();
+					if (stacksToDisplay.stream().noneMatch(displayedStack -> displayedStack.isItemEqual(toAdd))) {
+						stacksToDisplay.add(toAdd);
+					}
+				});
 				selectedRecipe.set(-1);
 				outputSlot.setStack(ItemStack.EMPTY);
 				ci.cancel();
 			}
 		}
-		if (!ci.isCancelled()) {
-			tagRecipeMode = false;
-		}
 	}
 
 	@Inject(at = @At("HEAD"), method = "isInBounds", cancellable = true)
 	private void stonecutterRecipeTags$isInBounds(int id, CallbackInfoReturnable<Boolean> cir) {
-		cir.setReturnValue(tagRecipeMode()
-				? id >= 0 && id < recipes.size()
-				: id >= 0 && id < availableRecipes.size());
+		cir.setReturnValue(id >= 0 && id < stacksToDisplay.size());
 	}
 
 	@Inject(at = @At("HEAD"), method = "onButtonClick", cancellable = true)
 	private void stonecutterRecipeTags$onButtonClick(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> cir) {
-		if (tagRecipeMode()) {
-			int required = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
-			if (inputSlot.getStack().getCount() >= required) {
-				if (isInBounds(id)) {
-					this.selectedRecipe.set(id);
-					populateResult();
-				}
+		int required = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
+		if (inputSlot.getStack().getCount() >= required) {
+			if (isInBounds(id)) {
+				this.selectedRecipe.set(id);
+				populateResult();
 			}
-			cir.setReturnValue(true);
 		}
+		cir.setReturnValue(true);
 	}
 
 	@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
@@ -125,27 +130,25 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 
 	@Inject(at = @At("HEAD"), method = "populateResult", cancellable = true)
 	private void stonecutterRecipeTags$populateResult(CallbackInfo ci) {
-		if (tagRecipeMode()) {
-			int neededCount = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
-			if (!this.recipes.isEmpty() && inputSlot.getStack().getCount() >= neededCount) {
-				ItemStack stack = recipes.get(selectedRecipe.get()).copy();
-				stack.setCount(StonecutterRecipeTagHandler.getItemCraftCount(stack.getItem()));
-				outputSlot.setStack(stack);
-			} else {
-				recipes.clear();
-				outputSlot.setStack(ItemStack.EMPTY);
-			}
-
-			sendContentUpdates();
-			ci.cancel();
+		int neededCount = StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack());
+		if (!this.stacksToDisplay.isEmpty() && inputSlot.getStack().getCount() >= neededCount) {
+			ItemStack stack = stacksToDisplay.get(selectedRecipe.get()).copy();
+			stack.setCount(StonecutterRecipeTagHandler.getItemCraftCount(stack.getItem()));
+			outputSlot.setStack(stack);
+		} else {
+			stacksToDisplay.clear();
+			outputSlot.setStack(ItemStack.EMPTY);
 		}
+
+		sendContentUpdates();
+		ci.cancel();
 	}
 
 	@Inject(at = @At("HEAD"), method = "canCraft", cancellable = true)
 	private void stonecutterRecipeTags$canCraft(CallbackInfoReturnable<Boolean> cir) {
-		if (tagRecipeMode()) {
-			cir.setReturnValue(inputSlot.hasStack() && !recipes.isEmpty());
-		}
+		cir.setReturnValue(inputSlot.hasStack() &&
+				StonecutterRecipeTagHandler.getItemCraftCount(inputSlot.getStack()) <= inputSlot.getStack().getCount() &&
+				!stacksToDisplay.isEmpty());
 	}
 
 	@Redirect(at = @At(value = "INVOKE", target = "Ljava/util/Optional;isPresent()Z"), method = "transferSlot")
@@ -154,12 +157,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	}
 
 	@Override
-	public boolean tagRecipeMode() {
-		return tagRecipeMode;
-	}
-
-	@Override
-	public List<ItemStack> getRecipeStacks() {
-		return recipes;
+	public List<ItemStack> getStacksToDisplay() {
+		return stacksToDisplay;
 	}
 }

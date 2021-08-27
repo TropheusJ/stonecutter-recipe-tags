@@ -1,4 +1,4 @@
-package com.tropheus_jay.stonecutter_recipe_tags;
+package io.github.tropheusj.stonecutter_recipe_tags;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -15,6 +15,7 @@ public class StonecutterRecipeTags implements ModInitializer {
 	public void handleDataPackReload(ResourceManager resourceManager) {
 		StonecutterRecipeTagHandler.ALL_STONECUTTER_TAGS.clear();
 		for (Identifier id : resourceManager.findResources("tags/items/stonecutter_recipes", path -> path.endsWith(".json"))) {
+			if (id.getNamespace().equals("stonecutter_recipe_tags")) continue; // comment this to debug
 			StonecutterRecipeTagHandler.VALID = false;
 			StonecutterRecipeTagHandler.TAGS_TO_ADD.add(id);
 		}

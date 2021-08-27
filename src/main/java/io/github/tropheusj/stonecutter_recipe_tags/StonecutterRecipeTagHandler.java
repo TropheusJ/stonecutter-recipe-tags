@@ -1,4 +1,4 @@
-package com.tropheus_jay.stonecutter_recipe_tags;
+package io.github.tropheusj.stonecutter_recipe_tags;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -36,7 +37,7 @@ public class StonecutterRecipeTagHandler {
 	 */
 	public static Tag<Item> register(Identifier id) {
 		Identifier newID = new Identifier(id.getNamespace(), id.getPath().replace(".json", "").replace("tags/items/", ""));
-		Tag<Item> tag = TagRegistry.item(newID);
+		Tag<Item> tag = TagFactory.ITEM.create(newID);
 		ALL_STONECUTTER_TAGS.add(tag);
 		return tag;
 	}

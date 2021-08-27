@@ -28,8 +28,6 @@ start by creating a subfolder in your mod's item tags directory. This subfolder
 should be named `stonecutter_recipes`. File structure should look something like this:<br>
 `resources/data/modid/tags/items/stonecutter_recipes/`<br>
 Any tag inside this folder will automatically be registered as a recipe tag.<br>
-**Note: Tag recipes and regular recipes cannot coexist for one item. Tag recipes
-will override regular ones.** This *may* be changed in a later version.
 #### Item Counts
 Every item has a count associated with it used in crafting. This number should
 be how many of this item is needed for one block to be made. For example,
