@@ -17,7 +17,7 @@ public class StonecutterScreenHandlerOutputSlotMixin {
 	@Shadow // this error is a lie
 	private StonecutterScreenHandler field_17639;
 
-	@ModifyConstant(method = "onTakeItem", constant = @Constant(intValue = 1))
+	@ModifyConstant(method = "onTakeItem(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;)V", constant = @Constant(intValue = 1))
 	private int stonecutterRecipeTags$redirectIntToShrinkInput(int original) {
 		ItemStack inputStack = field_17639.input.getStack(0);
 		int toTake = StonecutterRecipeTagHandler.getItemCraftCount(inputStack);
