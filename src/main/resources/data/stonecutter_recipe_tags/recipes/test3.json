@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "minecraft:cobweb"
-  },
-  "result": "minecraft:dark_oak_slab",
-  "count": 1
-}

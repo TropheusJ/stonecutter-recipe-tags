@@ -1,8 +1,8 @@
 {
   "type": "minecraft:stonecutting",
   "ingredient": {
-    "item": "minecraft:dark_oak_slab"
+    "item": "minecraft:andesite"
   },
-  "result": "minecraft:smooth_stone_slab",
+  "result": "minecraft:dirt",
   "count": 1
 }
