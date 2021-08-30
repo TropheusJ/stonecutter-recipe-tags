@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:stone",
+    "minecraft:stone_slab",
+    "minecraft:ice",
+    "minecraft:obsidian",
+    "minecraft:granite",
+    "minecraft:cobblestone_wall",
+    "minecraft:polished_andesite_stairs"
+  ]
+}

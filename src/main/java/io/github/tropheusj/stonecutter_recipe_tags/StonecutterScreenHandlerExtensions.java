@@ -6,4 +6,5 @@ import net.minecraft.item.ItemStack;
 
 public interface StonecutterScreenHandlerExtensions {
 	List<ItemStack> getStacksToDisplay();
+	boolean stackFromTagRecipe(ItemStack stack);
 }
