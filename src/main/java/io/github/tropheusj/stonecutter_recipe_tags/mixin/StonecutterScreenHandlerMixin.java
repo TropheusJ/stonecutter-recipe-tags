@@ -8,8 +8,13 @@ import io.github.tropheusj.stonecutter_recipe_tags.StonecutterScreenHandlerExten
 
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagHandler;
 
+import net.minecraft.client.search.SearchManager;
+import net.minecraft.client.search.Searchable;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.recipe.RecipeType;
 
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import org.jetbrains.annotations.Nullable;
@@ -82,8 +87,10 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 					}
 				}
 				availableRecipes = world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, input, world);
-				List<ItemStack> intermediateList = items.stream().map(ItemStack::new).toList();
-				stacksToDisplay.addAll(intermediateList);
+				for (Item item : items) {
+					ItemStack stackedItem = new ItemStack(item);
+					stacksToDisplay.add(stackedItem);
+				}
 				availableRecipes.forEach(recipe -> {
 					ItemStack toAdd = recipe.getOutput();
 					if (stacksToDisplay.stream().noneMatch(displayedStack -> displayedStack.isItemEqual(toAdd))) {

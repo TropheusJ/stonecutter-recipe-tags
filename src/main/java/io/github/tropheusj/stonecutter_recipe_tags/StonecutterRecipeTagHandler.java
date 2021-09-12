@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.fabricmc.fabric.api.tag.TagFactory;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
@@ -16,11 +15,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class StonecutterRecipeTagHandler {
-	static final Set<Tag<Item>> ALL_STONECUTTER_TAGS = new HashSet<>();
+	public static final Set<Tag<Item>> ALL_STONECUTTER_TAGS = new HashSet<>();
+	public static final Set<Identifier> ALL_STONECUTTER_TAG_IDS = new HashSet<>();
 	private static final Map<Item, Integer> COUNT_CACHE = new HashMap<>();
 	static boolean VALID = true;
 	static Set<Identifier> TAGS_TO_ADD = new HashSet<>();
@@ -38,7 +40,9 @@ public class StonecutterRecipeTagHandler {
 	public static Tag<Item> register(Identifier id) {
 		Identifier newID = new Identifier(id.getNamespace(), id.getPath().replace(".json", "").replace("tags/items/", ""));
 		Tag<Item> tag = TagFactory.ITEM.create(newID);
+//		ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, newID, identifier -> new RuntimeException("Identifier not a recognized tag: " + identifier));
 		ALL_STONECUTTER_TAGS.add(tag);
+		ALL_STONECUTTER_TAG_IDS.add(id);
 		return tag;
 	}
 
@@ -115,4 +119,8 @@ public class StonecutterRecipeTagHandler {
 		VALID = true;
 	}
 
+
+	public static void test() {
+
+	}
 }

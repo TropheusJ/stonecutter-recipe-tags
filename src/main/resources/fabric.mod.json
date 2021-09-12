@@ -16,11 +16,15 @@
   "entrypoints": {
     "main": [
       "io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags"
+    ],
+    "client": [
+      "io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagsClient"
     ]
   },
   "mixins": [
     "stonecutter_recipe_tags.mixins.json"
   ],
+  "accessWidener": "stonecutter_recipe_tags.accesswidener",
   "depends": {
     "fabricloader": ">=0.11.6",
     "fabric": "*",

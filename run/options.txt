@@ -36,7 +36,7 @@ biomeBlendRadius:1
 renderClouds:true
 resourcePacks:["Fabric Mods"]
 incompatibleResourcePacks:[]
-lastServer:
+lastServer:localhost
 lang:en_us
 chatVisibility:0
 chatOpacity:1.0
@@ -63,9 +63,9 @@ tutorialStep:none
 mouseWheelSensitivity:1.0
 rawMouseInput:true
 glDebugVerbosity:1
-skipMultiplayerWarning:false
+skipMultiplayerWarning:true
 hideMatchedNames:true
-joinedFirstServer:false
+joinedFirstServer:true
 hideBundleTutorial:false
 syncChunkWrites:true
 key_key.attack:key.mouse.right

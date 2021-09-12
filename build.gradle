@@ -23,6 +23,10 @@ dependencies {
     modImplementation "maven.modrinth:lazydfu:0.1.2"
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/stonecutter_recipe_tags.accesswidener")
+}
+
 processResources {
     inputs.property "version", project.version
 
