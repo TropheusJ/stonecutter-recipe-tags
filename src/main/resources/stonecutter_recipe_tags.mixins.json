@@ -4,6 +4,7 @@
   "package": "io.github.tropheusj.stonecutter_recipe_tags.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "PlayerManagerMixin",
     "StonecutterScreenHandlerMixin",
     "StonecutterScreenHandlerOutputSlotMixin"
   ],

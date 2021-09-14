@@ -1,43 +1,59 @@
 package io.github.tropheusj.stonecutter_recipe_tags;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.item.Item;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
-import net.minecraft.tag.TagManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
-import java.util.Map;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
+import net.minecraft.util.profiler.Profiler;
 
 public class StonecutterRecipeTags implements ModInitializer {
-	public static final Identifier FORCE_RELOAD_PACKET = new Identifier("stonecutter_recipe_tags", "force_reload");
+	public static final String ID = "stonecutter_recipe_tags";
+
 	@Override
 	public void onInitialize() {
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> handleDataPackReload(server.getResourceManager()));
-		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, manager, success) -> handleDataPackReload(manager.getResourceManager()));
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			PacketByteBuf idBuf = PacketByteBufs.create();
-			StonecutterRecipeTagHandler.ALL_STONECUTTER_TAG_IDS.forEach(idBuf::writeIdentifier);
-			sender.sendPacket(FORCE_RELOAD_PACKET, idBuf);
-		});
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(ReloadListener.INSTANCE);
 	}
 
-	public static void handleDataPackReload(ResourceManager resourceManager) {
-		for (Identifier id : resourceManager.findResources("tags/items/stonecutter_recipes", path -> path.endsWith(".json"))) {
-			if (id.getNamespace().equals("stonecutter_recipe_tags")) continue; // comment this to debug
-			StonecutterRecipeTagHandler.VALID = false;
-			StonecutterRecipeTagHandler.TAGS_TO_ADD.add(id);
+	public static Identifier asId(String path) {
+		return new Identifier(ID, path);
+	}
+
+	public static class ReloadListener extends SinglePreparationResourceReloader<Unit> implements IdentifiableResourceReloadListener {
+		private static final ReloadListener INSTANCE = new ReloadListener();
+
+		public static final Identifier ID = asId("automatic_stonecutter_tag_recipes");
+		public static final Set<Identifier> DEPENDENCIES = Collections.singleton(ResourceReloadListenerKeys.TAGS);
+
+		@Override
+		protected Unit prepare(ResourceManager manager, Profiler profiler) {
+			return Unit.INSTANCE;
+		}
+
+		@Override
+		protected void apply(Unit prepared, ResourceManager manager, Profiler profiler) {
+			for (Identifier id : manager.findResources("tags/items/stonecutter_recipes", path -> path.endsWith(".json"))) {
+				if (id.getNamespace().equals(StonecutterRecipeTags.ID)) continue; // TODO: move test tag to test mod and remove this line
+				StonecutterRecipeTagManager.register(id);
+			}
+		}
+
+		@Override
+		public Identifier getFabricId() {
+			return ID;
+		}
+
+		@Override
+		public Collection<Identifier> getFabricDependencies() {
+			return DEPENDENCIES;
 		}
 	}
 }

@@ -2,17 +2,6 @@ package io.github.tropheusj.stonecutter_recipe_tags.mixin;
 
 import java.util.List;
 
-import io.github.tropheusj.stonecutter_recipe_tags.StonecutterScreenHandlerExtensions;
-
-import net.fabricmc.api.EnvType;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.search.SearchManager;
-import net.minecraft.client.search.Searchable;
-
-import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import io.github.tropheusj.stonecutter_recipe_tags.mixinterface.StonecutterScreenHandlerExtension;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.StonecutterScreen;
@@ -44,7 +35,7 @@ public abstract class StonecutterScreenMixin extends HandledScreen<StonecutterSc
 
 	@Inject(at = @At("HEAD"), method = "renderRecipeIcons", cancellable = true)
 	private void stonecutterRecipeTags$renderRecipeIcons(int x, int y, int scrollOffset, CallbackInfo ci) {
-		StonecutterScreenHandlerExtensions extendedHandler = (StonecutterScreenHandlerExtensions) handler;
+		StonecutterScreenHandlerExtension extendedHandler = (StonecutterScreenHandlerExtension) handler;
 		List<ItemStack> list = extendedHandler.getStacksToDisplay();
 		for (int i = this.scrollOffset; i < scrollOffset && i < list.size(); i++) {
 			ItemStack stack = list.get(i);
@@ -59,7 +50,7 @@ public abstract class StonecutterScreenMixin extends HandledScreen<StonecutterSc
 
 	@Inject(at = @At("HEAD"), method = "renderRecipeBackground")
 	private void stonecutterRecipeTags$renderRecipeBackground(MatrixStack matrices, int mouseX, int mouseY, int x, int y, int scrollOffset, CallbackInfo ci) {
-		StonecutterScreenHandlerExtensions extendedHandler = (StonecutterScreenHandlerExtensions) handler;
+		StonecutterScreenHandlerExtension extendedHandler = (StonecutterScreenHandlerExtension) handler;
 		List<ItemStack> stacks = extendedHandler.getStacksToDisplay();
 
 		for (int i = this.scrollOffset; i < scrollOffset && i < stacks.size(); ++i) {
@@ -80,7 +71,7 @@ public abstract class StonecutterScreenMixin extends HandledScreen<StonecutterSc
 
 	@Inject(at = @At("HEAD"), method = "drawMouseoverTooltip", cancellable = true)
 	private void stonecutterRecipeTags$drawMouseoverTooltip(MatrixStack matrices, int x, int y, CallbackInfo ci) {
-		StonecutterScreenHandlerExtensions extendedHandler = (StonecutterScreenHandlerExtensions) handler;
+		StonecutterScreenHandlerExtension extendedHandler = (StonecutterScreenHandlerExtension) handler;
 		super.drawMouseoverTooltip(matrices, x, y);
 		if (canCraft) {
 			int i = this.x + 52;
@@ -102,13 +93,13 @@ public abstract class StonecutterScreenMixin extends HandledScreen<StonecutterSc
 
 	@Inject(at = @At("HEAD"), method = "shouldScroll", cancellable = true)
 	private void stonecutterRecipeTags$shouldScroll(CallbackInfoReturnable<Boolean> cir) {
-		StonecutterScreenHandlerExtensions extendedHandler = (StonecutterScreenHandlerExtensions) handler;
+		StonecutterScreenHandlerExtension extendedHandler = (StonecutterScreenHandlerExtension) handler;
 		cir.setReturnValue(canCraft && extendedHandler.getStacksToDisplay().size() > 12);
 	}
 
 	@Inject(at = @At("HEAD"), method = "getMaxScroll", cancellable = true)
 	private void stonecutterRecipeTags$getMaxScroll(CallbackInfoReturnable<Integer> cir) {
-		StonecutterScreenHandlerExtensions extendedHandler = (StonecutterScreenHandlerExtensions) handler;
+		StonecutterScreenHandlerExtension extendedHandler = (StonecutterScreenHandlerExtension) handler;
 		cir.setReturnValue((extendedHandler.getStacksToDisplay().size() + 4 - 1) / 4 - 3);
 	}
 }

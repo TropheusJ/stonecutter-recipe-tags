@@ -4,14 +4,17 @@
   "version": "${version}",
   "name": "Stonecutter Recipe Tags",
   "description": "Allows for creation of stonecutter recipes with tags, saving on JSON files.",
+
   "authors": [
     "Tropheus Jay"
   ],
   "contact": {
     "sources": "https://github.com/TropheusJ/stonecutter-recipe-tags"
   },
+
   "license": "MIT",
   "icon": "assets/stonecutter_recipe_tags/icon.png",
+
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -24,7 +27,7 @@
   "mixins": [
     "stonecutter_recipe_tags.mixins.json"
   ],
-  "accessWidener": "stonecutter_recipe_tags.accesswidener",
+
   "depends": {
     "fabricloader": ">=0.11.6",
     "fabric": "*",
