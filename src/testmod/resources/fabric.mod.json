@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "stonecutter_recipe_tags",
-  "version": "${version}",
+  "id": "stonecutter_recipe_tags_testmod",
+  "version": "1.0.0",
 
-  "name": "Stonecutter Recipe Tags",
-  "description": "Allows for creation of stonecutter recipes with tags, saving on JSON files.",
+  "name": "Stonecutter Recipe Tags Testmod",
+  "description": "Testmod for Stonecutter Recipe Tags",
   "authors": [
     "Tropheus Jay"
   ],
@@ -18,18 +18,12 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags"
-    ],
-    "client": [
-      "io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagsClient"
-    ]
   },
   "mixins": [
-    "stonecutter_recipe_tags.mixins.json"
   ],
 
   "depends": {
+    "stonecutter_recipe_tags": "*",
     "fabricloader": ">=0.11.6",
     "fabric": "*",
     "minecraft": ">=1.17.1",

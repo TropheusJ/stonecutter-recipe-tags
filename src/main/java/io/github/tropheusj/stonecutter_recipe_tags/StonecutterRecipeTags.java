@@ -30,7 +30,7 @@ public class StonecutterRecipeTags implements ModInitializer {
 	public static class ReloadListener extends SinglePreparationResourceReloader<Unit> implements IdentifiableResourceReloadListener {
 		private static final ReloadListener INSTANCE = new ReloadListener();
 
-		public static final Identifier ID = asId("automatic_stonecutter_tag_recipes");
+		public static final Identifier ID = asId("server_data_reload_listener");
 		public static final Set<Identifier> DEPENDENCIES = Collections.singleton(ResourceReloadListenerKeys.TAGS);
 
 		@Override
@@ -40,9 +40,12 @@ public class StonecutterRecipeTags implements ModInitializer {
 
 		@Override
 		protected void apply(Unit prepared, ResourceManager manager, Profiler profiler) {
+			StonecutterRecipeTagManager.clearTags();
 			for (Identifier id : manager.findResources("tags/items/stonecutter_recipes", path -> path.endsWith(".json"))) {
-				if (id.getNamespace().equals(StonecutterRecipeTags.ID)) continue; // TODO: move test tag to test mod and remove this line
-				StonecutterRecipeTagManager.register(id);
+				String tagPath = id.getPath();
+				tagPath = tagPath.substring(11, tagPath.length() - 5);
+				Identifier tagId = new Identifier(id.getNamespace(), tagPath);
+				StonecutterRecipeTagManager.registerOrGet(tagId);
 			}
 		}
 

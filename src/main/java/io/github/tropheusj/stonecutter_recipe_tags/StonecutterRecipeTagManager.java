@@ -36,16 +36,29 @@ public class StonecutterRecipeTagManager {
 	}
 
 	/**
-	 * Tags fed into this method will be used as recipes.<br>
-	 * Tags registered manually will need to be re-registered on every resource reload.
-	 * @param id The tag to register
+	 * Registers or gets an already registered tag for the provided id.<br>
+	 * Registered tags will be used as stonecutter recipes.<br>
+	 * Tags registered manually will not persist through resource reloads.
+	 * @param id The id of the tag
 	 * @return The registered tag
 	 */
-	public static Tag.Identified<Item> register(Identifier id) {
-		Identifier newID = new Identifier(id.getNamespace(), id.getPath().replace(".json", "").replace("tags/items/", ""));
-		Tag.Identified<Item> tag = TagFactory.ITEM.create(newID);
-		STONECUTTER_TAG_MAP.put(id, tag);
+	public static Tag.Identified<Item> registerOrGet(Identifier id) {
+		Tag.Identified<Item> tag = getRegisteredTag(id);
+		if (tag == null) {
+			tag = TagFactory.ITEM.create(id);
+			register(tag);
+		}
 		return tag;
+	}
+
+	/**
+	 * Registers an already existing tag if a tag with the same id has not already been registered.<br>
+	 * Registered tags will be used as stonecutter recipes.<br>
+	 * Tags registered manually will not persist through resource reloads.
+	 * @param tag The tag to register
+	 */
+	public static void register(Tag.Identified<Item> tag) {
+		STONECUTTER_TAG_MAP.putIfAbsent(tag.getId(), tag);
 	}
 
 	/**
@@ -119,15 +132,19 @@ public class StonecutterRecipeTagManager {
 		return getItemCraftCount(stack.getItem());
 	}
 
+	public static void clearTags() {
+		STONECUTTER_TAG_MAP.clear();
+	}
+
 	public static void toPacketBuf(PacketByteBuf buf) {
 		buf.writeCollection(STONECUTTER_TAG_MAP.keySet(), (buf1, id) -> buf.writeIdentifier(id));
 	}
 
 	public static void fromPacketBuf(PacketByteBuf buf) {
-		STONECUTTER_TAG_MAP.clear();
+		clearTags();
 		List<Identifier> ids = buf.readCollection(ArrayList::new, PacketByteBuf::readIdentifier);
 		for (Identifier id : ids) {
-			register(id);
+			registerOrGet(id);
 		}
 	}
 

@@ -21,6 +21,32 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "maven.modrinth:lazydfu:0.1.2"
+
+    afterEvaluate {
+        testmodImplementation sourceSets.main.output
+    }
+}
+
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+}
+
+loom {
+    runs {
+        testmodClient {
+            client()
+            name "Testmod Client"
+            source sourceSets.testmod
+        }
+        testmodServer {
+            server()
+            name "Testmod Server"
+            source sourceSets.testmod
+        }
+    }
 }
 
 processResources {
