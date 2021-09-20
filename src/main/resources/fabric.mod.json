@@ -6,7 +6,8 @@
   "name": "Stonecutter Recipe Tags",
   "description": "Allows for creation of stonecutter recipes with tags, saving on JSON files.",
   "authors": [
-    "Tropheus Jay"
+    "Tropheus Jay",
+    "Pepper_Bell"
   ],
   "contact": {
     "issues": "https://github.com/TropheusJ/stonecutter-recipe-tags/issues",
