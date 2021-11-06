@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[37,)"
+issueTrackerURL = "https://github.com/TropheusJ/stonecutter-recipe-tags/issues"
+license = "MIT"
+
+[[mods]]
+modId = "stonecutter_recipe_tags"
+version = "${version}"
+displayName = "Stonecutter Recipe Tags"
+authors = "Tropheus Jay, Pepper_Bell"
+description = '''
+Allows for creation of stonecutter recipes with tags, saving on JSON files.
+'''
+logoFile = "assets/stonecutter_recipe_tags/icon.png"
+
+[[dependencies.stonecutter_recipe_tags]]
+modId = "forge"
+mandatory = true
+versionRange = "[37,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stonecutter_recipe_tags]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.17.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stonecutter_recipe_tags]]
+modId = "architectury"
+mandatory = true
+versionRange = "[2.3.23,)"
+ordering = "AFTER"
+side = "BOTH"

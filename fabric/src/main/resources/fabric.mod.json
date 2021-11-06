@@ -20,10 +20,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags"
+      "io.github.tropheusj.stonecutter_recipe_tags.fabric.StonecutterRecipeTagsFabric"
     ],
     "client": [
-      "io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagsClient"
+      "io.github.tropheusj.stonecutter_recipe_tags.fabric.StonecutterRecipeTagsClientFabric"
     ]
   },
   "mixins": [
