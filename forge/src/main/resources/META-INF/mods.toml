@@ -11,7 +11,7 @@ authors = "Tropheus Jay, Pepper_Bell"
 description = '''
 Allows for creation of stonecutter recipes with tags, saving on JSON files.
 '''
-logoFile = "assets/stonecutter_recipe_tags/icon.png"
+logoFile = "icon.png"
 
 [[dependencies.stonecutter_recipe_tags]]
 modId = "forge"
