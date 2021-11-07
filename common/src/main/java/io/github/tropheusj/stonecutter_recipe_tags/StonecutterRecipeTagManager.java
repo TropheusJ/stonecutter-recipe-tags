@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.architectury.networking.NetworkChannel;
-import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.SimpleNetworkManager;
+import me.shedaniel.architectury.networking.NetworkChannel;
+import me.shedaniel.architectury.networking.NetworkManager;
+import me.shedaniel.architectury.networking.simple.SimpleNetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -116,7 +116,8 @@ public class StonecutterRecipeTagManager {
 	public static int getItemCraftCount(Item item) {
 		Integer count = ITEM_COUNT_MAP.get(item);
 		if (count != null) return count;
-		if (item instanceof BlockItem blockItem) {
+		if (item instanceof BlockItem) {
+			BlockItem blockItem = (BlockItem)item;
 			Block block = blockItem.getBlock();
 			if (block instanceof SlabBlock || BlockTags.SLABS.contains(block)) {
 				return 2;
@@ -137,15 +138,20 @@ public class StonecutterRecipeTagManager {
 	}
 
 	public static void toPacketBuf(PacketByteBuf buf) {
-		buf.writeCollection(STONECUTTER_TAG_MAP.keySet(), (buf1, id) -> buf.writeIdentifier(id));
+		buf.writeVarInt(STONECUTTER_TAG_MAP.keySet().size());
+		for (Identifier id : STONECUTTER_TAG_MAP.keySet()) {
+			buf.writeIdentifier(id);
+		}
 	}
 
 	public static void fromPacketBuf(PacketByteBuf buf) {
 		clearTags();
-		List<Identifier> ids = buf.readCollection(ArrayList::new, PacketByteBuf::readIdentifier);
-		for (Identifier id : ids) {
+		System.out.println("Cleared Tags");
+		for (int i = 0; i < buf.readVarInt(); i++) {
+			Identifier id = buf.readIdentifier();
 			registerOrGet(id);
 		}
+		System.out.println("Registered and got");
 	}
 
 	/**

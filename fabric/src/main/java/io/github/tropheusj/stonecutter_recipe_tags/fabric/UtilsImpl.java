@@ -1,13 +1,13 @@
 package io.github.tropheusj.stonecutter_recipe_tags.fabric;
 
-import dev.architectury.networking.NetworkManager;
+import me.shedaniel.architectury.networking.NetworkManager;
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags;
 import io.github.tropheusj.stonecutter_recipe_tags.Utils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
-import net.fabricmc.fabric.api.tag.TagFactory;
+import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class UtilsImpl {
 	public static Tag.Identified<Item> getItemTag(Identifier id) {
-		return TagFactory.ITEM.create(id);
+		return (Tag.Identified)TagRegistry.item(id);
 	}
 
 	public static ResourceReloader getListener() {

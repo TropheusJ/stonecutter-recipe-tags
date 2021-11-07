@@ -1,6 +1,6 @@
 package io.github.tropheusj.stonecutter_recipe_tags.forge;
 
-import dev.architectury.hooks.tags.TagHooks;
+import me.shedaniel.architectury.hooks.TagHooks;
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags;
 import io.github.tropheusj.stonecutter_recipe_tags.Utils;
@@ -13,8 +13,8 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.Collection;
 import java.util.Collections;

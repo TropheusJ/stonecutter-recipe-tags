@@ -56,7 +56,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	}
 
 	@Shadow
-	protected abstract boolean isInBounds(int id);
+	protected abstract boolean method_30160(int id);
 
 	@Shadow
 	abstract void populateResult();
@@ -74,7 +74,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 				List<Item> items = new ArrayList<>();
 				for (Tag.Identified<Item> tag : tags) {
 					for (Item item : tag.values()) {
-						if (!stack.isOf(item) && !items.contains(item)) {
+						if (!stack.isItemEqual(item.getDefaultStack()) && !items.contains(item)) {
 							items.add(item);
 						}
 					}
@@ -97,7 +97,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		}
 	}
 
-	@Inject(at = @At("HEAD"), method = "isInBounds", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "method_30160", cancellable = true)
 	private void stonecutterRecipeTags$isInBounds(int id, CallbackInfoReturnable<Boolean> cir) {
 		cir.setReturnValue(id >= 0 && id < stacksToDisplay.size());
 	}
@@ -106,7 +106,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	private void stonecutterRecipeTags$onButtonClick(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> cir) {
 		int required = StonecutterRecipeTagManager.getItemCraftCount(inputSlot.getStack());
 		if (inputSlot.getStack().getCount() >= required) {
-			if (isInBounds(id)) {
+			if (method_30160(id)) {
 				this.selectedRecipe.set(id);
 				populateResult();
 			}
@@ -114,11 +114,11 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		cir.setReturnValue(true);
 	}
 
-	@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
+	/*@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
 	private boolean stonecutterRecipeTags$onContentsChanged(ItemStack itemStack, Item item) {
 		// inputStack is old item
 		// itemStack is new item
-		boolean differentItem = !itemStack.isOf(inputStack.getItem());
+		boolean differentItem = !itemStack.isItemEqual(inputStack.getItem().getDefaultStack());
 		int lastCount = inputStack.getCount();
 		int lastRequiredCount = StonecutterRecipeTagManager.getItemCraftCount(inputSlot.getStack());
 		int newCount = itemStack.getCount();
@@ -126,6 +126,27 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		boolean nowMeetsCountRequirement = lastCount < lastRequiredCount && newCount >= newRequiredCount;
 		boolean noLongerMeetsCountRequirement = newCount < newRequiredCount && lastCount >= lastRequiredCount;
 		return !(differentItem || nowMeetsCountRequirement || noLongerMeetsCountRequirement); // redirected method is inverted, invert here to make it Good:tm:
+	}
+
+	Lnet/minecraft/screen/StonecutterScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V
+	Lnet/minecraft/screen/StonecutterScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V
+	Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;
+	Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;
+	Lnet/minecraft/screen/StonecutterScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V
+	Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z*/
+
+	@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;"))
+	private Item stonecutterRecipeTags$onContentsChanged(ItemStack itemStack) {
+		// inputStack is old item
+		// itemStack is new item
+		boolean differentItem = !itemStack.isItemEqual(inputStack.getItem().getDefaultStack());
+		int lastCount = inputStack.getCount();
+		int lastRequiredCount = StonecutterRecipeTagManager.getItemCraftCount(inputSlot.getStack());
+		int newCount = itemStack.getCount();
+		int newRequiredCount = StonecutterRecipeTagManager.getItemCraftCount(itemStack);
+		boolean nowMeetsCountRequirement = lastCount < lastRequiredCount && newCount >= newRequiredCount;
+		boolean noLongerMeetsCountRequirement = newCount < newRequiredCount && lastCount >= lastRequiredCount;
+		return inputStack.getItem(); // Make it null if need be
 	}
 
 	@Inject(at = @At("HEAD"), method = "populateResult", cancellable = true)
