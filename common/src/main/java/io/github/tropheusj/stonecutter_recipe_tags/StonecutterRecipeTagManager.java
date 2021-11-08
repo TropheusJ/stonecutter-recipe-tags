@@ -141,17 +141,23 @@ public class StonecutterRecipeTagManager {
 		buf.writeVarInt(STONECUTTER_TAG_MAP.keySet().size());
 		for (Identifier id : STONECUTTER_TAG_MAP.keySet()) {
 			buf.writeIdentifier(id);
+			System.out.println(id);
+			System.out.println(getRegisteredTag(id));
+			System.out.println(getRegisteredTag(new Identifier("a", "a")));
 		}
 	}
 
 	public static void fromPacketBuf(PacketByteBuf buf) {
 		clearTags();
-		System.out.println("Cleared Tags");
-		for (int i = 0; i < buf.readVarInt(); i++) {
+		int a = buf.readVarInt();
+		for (int i = 0; i < a;  i++) {
 			Identifier id = buf.readIdentifier();
 			registerOrGet(id);
+			System.out.println(id);
+			System.out.println(getRegisteredTag(id));
+			System.out.println(getRegisteredTag(new Identifier("a", "a")));
+
 		}
-		System.out.println("Registered and got");
 	}
 
 	/**

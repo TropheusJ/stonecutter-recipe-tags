@@ -11,7 +11,7 @@ import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.StonecutterScreenHandler;
 
-@Mixin(targets = "net.minecraft.class_3971$2")
+@Mixin(targets = "net.minecraft.screen.StonecutterScreenHandler$2")
 public class StonecutterScreenHandlerOutputSlotMixin {
 	@Final
 	@Dynamic

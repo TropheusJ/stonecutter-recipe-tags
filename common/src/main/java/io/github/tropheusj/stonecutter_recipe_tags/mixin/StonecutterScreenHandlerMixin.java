@@ -35,19 +35,19 @@ import net.minecraft.world.World;
 
 @Mixin(StonecutterScreenHandler.class)
 public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implements StonecutterScreenHandlerExtension {
-	@Unique
-	private List<ItemStack> stacksToDisplay = new ArrayList<>();
-	@Shadow
-	@Final
+	@Unique private List<ItemStack> stacksToDisplay = new ArrayList<>();
+	@Shadow @Final
 	Slot outputSlot;
-	@Shadow
-	@Final
+
+	@Shadow @Final
 	Slot inputSlot;
-	@Shadow
-	@Final
+
+	@Shadow @Final
 	private Property selectedRecipe;
+
 	@Shadow
 	private List<StonecuttingRecipe> availableRecipes;
+
 	@Shadow
 	private ItemStack inputStack;
 
