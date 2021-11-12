@@ -12,13 +12,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.StonecutterScreenHandler;
 
 @Mixin(targets = "net.minecraft.screen.StonecutterScreenHandler$2")
-public class StonecutterScreenHandlerOutputSlotMixin {
+public abstract class StonecutterScreenHandlerOutputSlotMixin {
 	@Final
-	@Dynamic
 	@Shadow
 	StonecutterScreenHandler field_17639;
 
-	@ModifyConstant(method = "onTakeItem(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;)V", constant = @Constant(intValue = 1))
+	@ModifyConstant(method = "onTakeItem(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", constant = @Constant(intValue = 1))
 	private int stonecutterRecipeTags$redirectIntToShrinkInput(int original) {
 		ItemStack inputStack = field_17639.input.getStack(0);
 		int toTake = StonecutterRecipeTagManager.getItemCraftCount(inputStack);

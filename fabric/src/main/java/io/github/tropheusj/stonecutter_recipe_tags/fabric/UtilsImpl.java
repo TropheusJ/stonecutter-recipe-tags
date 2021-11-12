@@ -1,14 +1,18 @@
 package io.github.tropheusj.stonecutter_recipe_tags.fabric;
 
-import me.shedaniel.architectury.networking.NetworkManager;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
-import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags;
 import io.github.tropheusj.stonecutter_recipe_tags.Utils;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.item.Item;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SinglePreparationResourceReloader;
@@ -17,17 +21,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 public class UtilsImpl {
 	public static Tag.Identified<Item> getItemTag(Identifier id) {
-		return (Tag.Identified)TagRegistry.item(id);
+		return (Tag.Identified<Item>) TagRegistry.item(id);
 	}
 
 	public static ResourceReloader getListener() {
 		return ReloadListener.INSTANCE;
+	}
+
+	public static Packet<?> createPacket(Identifier id, PacketByteBuf buf) {
+		return ServerPlayNetworking.createS2CPacket(id, buf);
 	}
 
 	public static class ReloadListener extends SinglePreparationResourceReloader<Unit> implements IdentifiableResourceReloadListener {

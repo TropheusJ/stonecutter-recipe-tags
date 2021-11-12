@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.shedaniel.architectury.networking.NetworkChannel;
-import me.shedaniel.architectury.networking.NetworkManager;
-import me.shedaniel.architectury.networking.simple.SimpleNetworkManager;
+import org.jetbrains.annotations.Nullable;
+
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -20,12 +19,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public class StonecutterRecipeTagManager {
+	public static final String ID = "stonecutter_recipe_tags";
 	public static final Identifier SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID = Utils.asId("sync_stonecutter_recipe_tags");
 
 	private static final Map<Identifier, Tag.Identified<Item>> STONECUTTER_TAG_MAP = new HashMap<>();
@@ -141,9 +137,6 @@ public class StonecutterRecipeTagManager {
 		buf.writeVarInt(STONECUTTER_TAG_MAP.keySet().size());
 		for (Identifier id : STONECUTTER_TAG_MAP.keySet()) {
 			buf.writeIdentifier(id);
-			System.out.println(id);
-			System.out.println(getRegisteredTag(id));
-			System.out.println(getRegisteredTag(new Identifier("a", "a")));
 		}
 	}
 
@@ -153,9 +146,6 @@ public class StonecutterRecipeTagManager {
 		for (int i = 0; i < a;  i++) {
 			Identifier id = buf.readIdentifier();
 			registerOrGet(id);
-			System.out.println(id);
-			System.out.println(getRegisteredTag(id));
-			System.out.println(getRegisteredTag(new Identifier("a", "a")));
 
 		}
 	}
@@ -167,12 +157,6 @@ public class StonecutterRecipeTagManager {
 	public static Packet<?> toSyncPacket() {
 		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		toPacketBuf(buf);
-		return NetworkManager.toPacket(NetworkManager.s2c(), SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID, buf);
-	}
-
-	@Environment(EnvType.CLIENT)
-	static void initClientsideSync() {
-		// this only works on fabric, forge handles it via mixin
-		NetworkManager.registerReceiver(NetworkManager.s2c(), SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID, (buf, ctx) -> fromPacketBuf(buf));
+		return Utils.createPacket(SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID, buf);
 	}
 }

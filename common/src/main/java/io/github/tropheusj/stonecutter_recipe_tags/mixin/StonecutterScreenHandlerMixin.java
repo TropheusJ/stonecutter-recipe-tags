@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import net.minecraft.util.registry.Registry;
-
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
-import io.github.tropheusj.stonecutter_recipe_tags.mixinterface.StonecutterScreenHandlerExtension;
+import io.github.tropheusj.stonecutter_recipe_tags.StonecutterScreenHandlerExtensions;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -34,15 +34,20 @@ import net.minecraft.tag.Tag;
 import net.minecraft.world.World;
 
 @Mixin(StonecutterScreenHandler.class)
-public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implements StonecutterScreenHandlerExtension {
-	@Unique private List<ItemStack> stacksToDisplay = new ArrayList<>();
-	@Shadow @Final
+public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implements StonecutterScreenHandlerExtensions {
+	@Unique
+	private List<ItemStack> stacksToDisplay = new ArrayList<>();
+
+	@Shadow
+	@Final
 	Slot outputSlot;
 
-	@Shadow @Final
+	@Shadow
+	@Final
 	Slot inputSlot;
 
-	@Shadow @Final
+	@Shadow
+	@Final
 	private Property selectedRecipe;
 
 	@Shadow
@@ -59,7 +64,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	protected abstract boolean method_30160(int id);
 
 	@Shadow
-	abstract void populateResult();
+	protected abstract void populateResult();
 
 	@Shadow
 	@Final
@@ -114,28 +119,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		cir.setReturnValue(true);
 	}
 
-	/*@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
-	private boolean stonecutterRecipeTags$onContentsChanged(ItemStack itemStack, Item item) {
-		// inputStack is old item
-		// itemStack is new item
-		boolean differentItem = !itemStack.isItemEqual(inputStack.getItem().getDefaultStack());
-		int lastCount = inputStack.getCount();
-		int lastRequiredCount = StonecutterRecipeTagManager.getItemCraftCount(inputSlot.getStack());
-		int newCount = itemStack.getCount();
-		int newRequiredCount = StonecutterRecipeTagManager.getItemCraftCount(itemStack);
-		boolean nowMeetsCountRequirement = lastCount < lastRequiredCount && newCount >= newRequiredCount;
-		boolean noLongerMeetsCountRequirement = newCount < newRequiredCount && lastCount >= lastRequiredCount;
-		return !(differentItem || nowMeetsCountRequirement || noLongerMeetsCountRequirement); // redirected method is inverted, invert here to make it Good:tm:
-	}
-
-	Lnet/minecraft/screen/StonecutterScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V
-	Lnet/minecraft/screen/StonecutterScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V
-	Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;
-	Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;
-	Lnet/minecraft/screen/StonecutterScreenHandler;onContentChanged(Lnet/minecraft/inventory/Inventory;)V
-	Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z*/
-
-	@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;"))
+	@Redirect(method = "onContentChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;", ordinal = 0))
 	private Item stonecutterRecipeTags$onContentsChanged(ItemStack itemStack) {
 		// inputStack is old item
 		// itemStack is new item
@@ -146,7 +130,8 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		int newRequiredCount = StonecutterRecipeTagManager.getItemCraftCount(itemStack);
 		boolean nowMeetsCountRequirement = lastCount < lastRequiredCount && newCount >= newRequiredCount;
 		boolean noLongerMeetsCountRequirement = newCount < newRequiredCount && lastCount >= lastRequiredCount;
-		return inputStack.getItem(); // Make it null if need be
+		boolean needsUpdate = differentItem || nowMeetsCountRequirement || noLongerMeetsCountRequirement;
+		return needsUpdate ? null : itemStack.getItem(); // return null to make != true and run code, return original to make != false and skip
 	}
 
 	@Inject(at = @At("HEAD"), method = "populateResult", cancellable = true)
@@ -165,6 +150,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 		ci.cancel();
 	}
 
+	@Environment(EnvType.CLIENT)
 	@Inject(at = @At("HEAD"), method = "canCraft", cancellable = true)
 	private void stonecutterRecipeTags$canCraft(CallbackInfoReturnable<Boolean> cir) {
 		cir.setReturnValue(inputSlot.hasStack() &&
