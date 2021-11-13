@@ -7,7 +7,7 @@ license = "MIT"
 modId = "stonecutter_recipe_tags"
 version = "${version}"
 displayName = "Stonecutter Recipe Tags"
-authors = "Tropheus Jay, Pepper_Bell"
+authors = "Tropheus Jay, Pepper_Bell, Siuolplex"
 description = '''
 Allows for creation of stonecutter recipes with tags, saving on JSON files.
 '''
