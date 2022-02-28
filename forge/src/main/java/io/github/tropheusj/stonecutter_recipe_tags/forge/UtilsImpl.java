@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public class UtilsImpl {
-	public static Tag.Identified<Item> getItemTag(Identifier id) {
+	public static TagKey<Item> getItemTag(Identifier id) {
 		return ItemTags.createOptional(id);
 	}
 

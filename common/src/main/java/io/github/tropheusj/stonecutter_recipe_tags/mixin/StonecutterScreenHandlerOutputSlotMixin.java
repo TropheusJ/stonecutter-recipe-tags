@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.StonecutterScreenHandler;
 
 @Mixin(targets = "net.minecraft.screen.StonecutterScreenHandler$2")
-public class StonecutterScreenHandlerOutputSlotMixin {
+public abstract class StonecutterScreenHandlerOutputSlotMixin {
 	@Final
 	@Dynamic
 	@Shadow

@@ -1,22 +1,18 @@
 package io.github.tropheusj.stonecutter_recipe_tags;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.item.Item;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-public class Utils {
-	@ExpectPlatform
-	public static Tag.Identified<Item> getItemTag(Identifier id) {
-		throw new RuntimeException("Architectury failed");
-	}
+import net.minecraft.util.registry.Registry;
 
-	@ExpectPlatform
-	public static ResourceReloader getListener() {
-		throw new RuntimeException("Architectury failed");
+public class Utils {
+	public static final String ID = "stonecutter_recipe_tags";
+
+	public static TagKey<Item> getItemTag(Identifier id) {
+		return TagKey.of(Registry.ITEM_KEY, id);
 	}
 
 	public static Identifier asId(String path) {
-		return new Identifier(StonecutterRecipeTags.ID, path);
+		return new Identifier(ID, path);
 	}
 }

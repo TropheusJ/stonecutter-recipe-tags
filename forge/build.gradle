@@ -16,9 +16,12 @@ configurations {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+    if (rootProject.forgeEnabled.toBoolean()) {
+        forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+    } else {
+        forge "net.minecraftforge:forge:1.18.1-39.0.90" // dummy download to make arch not complain
+    }
+
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

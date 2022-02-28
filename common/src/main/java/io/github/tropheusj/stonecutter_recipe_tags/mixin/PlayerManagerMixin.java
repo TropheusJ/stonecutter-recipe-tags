@@ -13,10 +13,9 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 @Mixin(PlayerManager.class)
-public class PlayerManagerMixin {
+public abstract class PlayerManagerMixin {
 	@Shadow
-	public void sendToAll(Packet<?> packet) {
-	}
+	public abstract void sendToAll(Packet<?> packet);
 
 	@Inject(method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/SynchronizeTagsS2CPacket;<init>(Ljava/util/Map;)V", shift = At.Shift.BY, by = 2))
 	private void stonecutterRecipeTags$afterSyncTagsOnPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {

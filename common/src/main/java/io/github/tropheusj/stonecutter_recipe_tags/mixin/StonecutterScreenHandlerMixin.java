@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
+
+import net.minecraft.util.registry.RegistryEntry;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -18,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
-import io.github.tropheusj.stonecutter_recipe_tags.mixinterface.StonecutterScreenHandlerExtension;
+import io.github.tropheusj.stonecutter_recipe_tags.StonecutterScreenHandlerExtensions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -30,11 +33,10 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.tag.Tag;
 import net.minecraft.world.World;
 
 @Mixin(StonecutterScreenHandler.class)
-public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implements StonecutterScreenHandlerExtension {
+public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implements StonecutterScreenHandlerExtensions {
 	@Unique
 	private List<ItemStack> stacksToDisplay = new ArrayList<>();
 	@Shadow
@@ -69,11 +71,12 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler implem
 	private void stonecutterRecipeTags$updateInput(Inventory input, ItemStack stack, CallbackInfo ci) {
 		stacksToDisplay = new ArrayList<>();
 		if (!stack.isEmpty()) {
-			List<Tag.Identified<Item>> tags = StonecutterRecipeTagManager.getRecipeTags(stack);
+			List<TagKey<Item>> tags = StonecutterRecipeTagManager.getRecipeTags(stack);
 			if (StonecutterRecipeTagManager.getItemCraftCount(stack) <= stack.getCount()) {
 				List<Item> items = new ArrayList<>();
-				for (Tag.Identified<Item> tag : tags) {
-					for (Item item : tag.values()) {
+				for (TagKey<Item> tag : tags) {
+					for (RegistryEntry<Item> entry : Registry.ITEM.iterateEntries(tag)) {
+						Item item = entry.value();
 						if (!stack.isOf(item) && !items.contains(item)) {
 							items.add(item);
 						}

@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.architectury.networking.NetworkChannel;
-import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.SimpleNetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -17,9 +14,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.api.EnvType;
@@ -28,7 +29,7 @@ import net.fabricmc.api.Environment;
 public class StonecutterRecipeTagManager {
 	public static final Identifier SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID = Utils.asId("sync_stonecutter_recipe_tags");
 
-	private static final Map<Identifier, Tag.Identified<Item>> STONECUTTER_TAG_MAP = new HashMap<>();
+	private static final Map<Identifier, TagKey<Item>> STONECUTTER_TAG_MAP = new HashMap<>();
 	private static final Map<Item, Integer> ITEM_COUNT_MAP = new HashMap<>();
 
 	static {
@@ -42,8 +43,8 @@ public class StonecutterRecipeTagManager {
 	 * @param id The id of the tag
 	 * @return The registered tag
 	 */
-	public static Tag.Identified<Item> registerOrGet(Identifier id) {
-		Tag.Identified<Item> tag = getRegisteredTag(id);
+	public static TagKey<Item> registerOrGet(Identifier id) {
+		TagKey<Item> tag = getRegisteredTag(id);
 		if (tag == null) {
 			tag = Utils.getItemTag(id);
 			register(tag);
@@ -57,8 +58,8 @@ public class StonecutterRecipeTagManager {
 	 * Tags registered manually will not persist through resource reloads.
 	 * @param tag The tag to register
 	 */
-	public static void register(Tag.Identified<Item> tag) {
-		STONECUTTER_TAG_MAP.putIfAbsent(tag.getId(), tag);
+	public static void register(TagKey<Item> tag) {
+		STONECUTTER_TAG_MAP.putIfAbsent(tag.id(), tag);
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class StonecutterRecipeTagManager {
 	 * @return The registered tag, or null if no tag for the specified id exists
 	 */
 	@Nullable
-	public static Tag.Identified<Item> getRegisteredTag(Identifier id) {
+	public static TagKey<Item> getRegisteredTag(Identifier id) {
 		return STONECUTTER_TAG_MAP.get(id);
 	}
 
@@ -76,10 +77,10 @@ public class StonecutterRecipeTagManager {
 	 * @param item The item to check
 	 * @return All stonecutter recipe tags the item is in
 	 */
-	public static List<Tag.Identified<Item>> getRecipeTags(Item item) {
-		List<Tag.Identified<Item>> tags = new ArrayList<>();
-		for (Tag.Identified<Item> tag : STONECUTTER_TAG_MAP.values()) {
-			if (tag.contains(item)) {
+	public static List<TagKey<Item>> getRecipeTags(Item item) {
+		List<TagKey<Item>> tags = new ArrayList<>();
+		for (TagKey<Item> tag : STONECUTTER_TAG_MAP.values()) {
+			if (item.getRegistryEntry().isIn(tag)) {
 				tags.add(tag);
 			}
 		}
@@ -89,7 +90,7 @@ public class StonecutterRecipeTagManager {
 	/**
 	 * @see StonecutterRecipeTagManager#getItemCraftCount(Item)
 	 */
-	public static List<Tag.Identified<Item>> getRecipeTags(ItemStack stack) {
+	public static List<TagKey<Item>> getRecipeTags(ItemStack stack) {
 		return getRecipeTags(stack.getItem());
 	}
 
@@ -118,7 +119,7 @@ public class StonecutterRecipeTagManager {
 		if (count != null) return count;
 		if (item instanceof BlockItem blockItem) {
 			Block block = blockItem.getBlock();
-			if (block instanceof SlabBlock || BlockTags.SLABS.contains(block)) {
+			if (block instanceof SlabBlock || block.getRegistryEntry().isIn(BlockTags.SLABS)) {
 				return 2;
 			}
 		}
@@ -155,12 +156,6 @@ public class StonecutterRecipeTagManager {
 	public static Packet<?> toSyncPacket() {
 		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		toPacketBuf(buf);
-		return NetworkManager.toPacket(NetworkManager.s2c(), SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID, buf);
-	}
-
-	@Environment(EnvType.CLIENT)
-	static void initClientsideSync() {
-		// this only works on fabric, forge handles it via mixin
-		NetworkManager.registerReceiver(NetworkManager.s2c(), SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID, (buf, ctx) -> fromPacketBuf(buf));
+		return new CustomPayloadS2CPacket(SYNC_STONECUTTER_RECIPE_TAGS_PACKET_ID, buf);
 	}
 }

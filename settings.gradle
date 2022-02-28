@@ -11,6 +11,6 @@ pluginManagement {
 
 include("common")
 include("fabric")
-include("forge")
+//include("forge") // uncomment for forge and set gradle.properties 'forgeEnabled' to true
 
 rootProject.name = "stonecutter-recipe-tags"
