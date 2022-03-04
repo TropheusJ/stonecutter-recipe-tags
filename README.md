@@ -2,7 +2,7 @@
 
 ## Info
 
-This Fabric mod allows for creation of stonecutter recipes through tags.
+This Fabric/Forge mod allows for creation of stonecutter recipes through tags.
 Any item in these tags can be crafted into any other item in the same tag.
 This allows for large decreases in JSON files and recipe counts, cutting
 file counts and reducing lag.

@@ -14,7 +14,7 @@
   },
 
   "license": "MIT",
-  "icon": "assets/stonecutter_recipe_tags/icon.png",
+  "icon": "assets/stonecutter_recipe_tags_testmod/icon.png",
 
   "environment": "*",
   "entrypoints": {

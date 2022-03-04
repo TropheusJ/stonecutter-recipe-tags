@@ -1,15 +1,19 @@
 package io.github.tropheusj.stonecutter_recipe_tags.forge;
 
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
-import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTags;
-import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagsClient;
+import io.github.tropheusj.stonecutter_recipe_tags.Utils;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
-@Mod(StonecutterRecipeTags.ID)
+@Mod(Utils.ID)
+@EventBusSubscriber
 public class StonecutterRecipeTagsForge {
 	public StonecutterRecipeTagsForge() {
-		StonecutterRecipeTags.init();
-		EnvExecutor.runInEnv(Env.CLIENT, () -> StonecutterRecipeTagsClient::init);
     }
+
+	@SubscribeEvent
+	public static void reload(AddReloadListenerEvent event) {
+		event.addListener(ReloadListener.INSTANCE);
+	}
 }
