@@ -4,6 +4,7 @@ plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "0.11.0-SNAPSHOT" apply false
     id 'maven-publish'
+    id "org.ajoberstar.grgit" version "4.1.1"
     id "io.github.juuxel.loom-quiltflower" version "1.+" apply false
 }
 
@@ -29,6 +30,12 @@ allprojects {
     archivesBaseName = rootProject.archives_base_name
     version = rootProject.mod_version
     group = rootProject.maven_group
+
+    if (grgit != null) {
+        version += "+${grgit.getBranch().current().name}.${grgit.head().abbreviatedId}"
+    } else {
+        version += "+custom_unknown"
+    }
 
     repositories {
         maven { url "https://api.modrinth.com/maven" }
