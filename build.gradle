@@ -2,7 +2,7 @@
 //file:noinspection GroovyAccessibility
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "0.11.0-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
     id 'maven-publish'
     id "org.ajoberstar.grgit" version "4.1.1"
     id "io.github.juuxel.loom-quiltflower" version "1.+" apply false
