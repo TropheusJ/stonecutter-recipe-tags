@@ -18,11 +18,11 @@ public class ReloadListener extends SinglePreparationResourceReloader<Unit> {
 	@Override
 	protected void apply(Unit prepared, ResourceManager manager, Profiler profiler) {
 		StonecutterRecipeTagManager.clearTags();
-		for (Identifier id : manager.findResources("tags/items/stonecutter_recipes", path -> path.endsWith(".json"))) {
+		manager.findResources("tags/items/stonecutter_recipes", id -> id.getPath().endsWith(".json")).forEach((id, unused) -> {
 			String tagPath = id.getPath();
 			tagPath = tagPath.substring(11, tagPath.length() - 5);
 			Identifier tagId = new Identifier(id.getNamespace(), tagPath);
 			StonecutterRecipeTagManager.registerOrGet(tagId);
-		}
+		});
 	}
 }
