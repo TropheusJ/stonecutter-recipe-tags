@@ -18,6 +18,9 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	public final int inputItemCraftCount;
 	private final Item inputItem;
 
+	/**
+	 * Creates fake recipe data so the recipe can be shown on screen and has reasonable defaults for mods that interact with it.
+	 */
 	public FakeStonecuttingRecipe(Item inputItem, int inputItemCraftCount, Item outputItem) {
 		super(
 				new Identifier(Utils.ID,
@@ -41,7 +44,7 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	}
 
 	/**
-	 * Recheck to prevent any item dupe shenanigans if {@link StonecutterScreenHandler#populateResult()} isn't called when the stack size changes.
+	 * Rechecks with {@link FakeStonecuttingRecipe#matches} to prevent any item dupe shenanigans if {@link StonecutterScreenHandler#populateResult()} isn't called when the stack size changes.
 	 */
 	@Override
 	public ItemStack craft(Inventory inventory) {

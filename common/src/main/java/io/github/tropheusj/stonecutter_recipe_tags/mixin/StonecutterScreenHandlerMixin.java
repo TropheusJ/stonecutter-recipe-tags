@@ -51,7 +51,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	/**
 	 * Appends {@link FakeStonecuttingRecipe}s to the list of real recipes.
 	 * <p>
-	 * {@link StonecutterScreenHandlerOutputSlotMixin} checks for these recipes when crafting.
+	 * {@link StonecutterScreenHandlerOutputSlotMixin} tests for these recipe types when crafting.
 	 */
 	@Redirect(method = "updateInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getAllMatches(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/List;"))
 	private List<StonecuttingRecipe> stonecutterRecipeTags$updateInput(RecipeManager recipeManager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world, Inventory input, ItemStack inputStack) {
@@ -74,7 +74,9 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	}
 
 	/**
-	 * Includes our fake recipes in the check for if any recipes exist. This is used to test if an item should be shift-clicked into the input.
+	 * Includes our fake recipes in the check for if any recipes exist.
+	 * <p>
+	 * This is used to test if an item should be shift-clicked into the input.
 	 */
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"), method = "transferSlot")
 	public Optional<StonecuttingRecipe> stonecutterRecipeTags$transferSlot(RecipeManager recipeManager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world) {
