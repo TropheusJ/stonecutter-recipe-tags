@@ -36,7 +36,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 
 	private static Stream<FakeStonecuttingRecipe> generateFakeRecipes(ItemStack inputStack) {
 		var inputItem = inputStack.getItem();
-		var inputItemCraftCount = StonecutterRecipeTagManager.getItemCraftCount(inputStack);
+		var inputItemCraftCount = StonecutterRecipeTagManager.getItemCraftCount(inputItem);
 		return StonecutterRecipeTagManager.getRecipeTags(inputStack)
 				.stream()
 				.flatMap((key) -> StreamSupport.stream(Registry.ITEM.iterateEntries(key).spliterator(), false))
@@ -78,7 +78,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	 * <p>
 	 * This is used to test if an item should be shift-clicked into the input.
 	 */
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"), method = "transferSlot")
+	@Redirect(method = "transferSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"))
 	public Optional<StonecuttingRecipe> stonecutterRecipeTags$transferSlot(RecipeManager recipeManager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world) {
 		return recipeManager.getFirstMatch(type, inventory, world)
 				.or(() -> generateFakeRecipes(inventory.getStack(0))
