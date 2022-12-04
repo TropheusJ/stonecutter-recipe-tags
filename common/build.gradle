@@ -8,6 +8,10 @@ architectury {
     common(rootProject.forgeEnabled.toBoolean())
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/stonecutter_recipe_tags.accesswidener")
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

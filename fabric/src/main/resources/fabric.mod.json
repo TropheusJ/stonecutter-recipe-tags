@@ -35,5 +35,8 @@
     "fabric": "*",
     "minecraft": ">=1.17.1",
     "java": ">=16"
+  },
+  "breaks": {
+    "quilt_item_setting": "<=3.0.0-beta.21+1.19.2"
   }
 }
