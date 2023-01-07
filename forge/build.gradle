@@ -20,6 +20,9 @@ version += ".forge"
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
 
+    shadowCommon("com.github.LlamaLad7:MixinExtras:0.1.1") { transitive = false }
+    forgeRuntimeLibrary("com.github.LlamaLad7:MixinExtras:0.1.1") { transitive = false }
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 }
@@ -44,6 +47,8 @@ shadowJar {
 
     configurations = [project.configurations.shadowCommon]
     classifier "dev-shadow"
+
+    relocate("com.llamalad7.mixinextras", "io.github.tropheusj.stonecutter_recipe_tags.shadow.mixinextras")
 }
 
 remapJar {
