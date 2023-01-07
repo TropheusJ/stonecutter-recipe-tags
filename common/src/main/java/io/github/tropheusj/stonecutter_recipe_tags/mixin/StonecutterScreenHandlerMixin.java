@@ -10,12 +10,11 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.github.tropheusj.stonecutter_recipe_tags.FakeStonecuttingRecipe;
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
@@ -35,9 +34,9 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 		super(type, syncId);
 	}
 
-	private static Stream<FakeStonecuttingRecipe> generateFakeRecipes(ItemStack inputStack) {
-		var inputItem = inputStack.getItem();
-		var inputItemCraftCount = StonecutterRecipeTagManager.getItemCraftCount(inputItem);
+	private static Stream<FakeStonecuttingRecipe> stonecutterRecipeTags$generateFakeRecipes(ItemStack inputStack) {
+		Item inputItem = inputStack.getItem();
+		int inputItemCraftCount = StonecutterRecipeTagManager.getItemCraftCount(inputItem);
 		return StonecutterRecipeTagManager.getRecipeTags(inputStack)
 				.stream()
 				.flatMap((key) -> StreamSupport.stream(Registries.ITEM.iterateEntries(key).spliterator(), false))
@@ -47,31 +46,48 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	}
 
 	@Shadow
-	abstract void populateResult();
+	private ItemStack inputStack;
+
+	@Shadow
+	@Final
+	private World world;
 
 	/**
 	 * Appends {@link FakeStonecuttingRecipe}s to the list of real recipes.
 	 * <p>
 	 * {@link StonecutterScreenHandlerOutputSlotMixin} tests for these recipe types when crafting.
 	 */
-	@Redirect(method = "updateInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getAllMatches(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/List;"))
-	private List<StonecuttingRecipe> stonecutterRecipeTags$updateInput(RecipeManager recipeManager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world, Inventory input, ItemStack inputStack) {
-		var toReturn = new ArrayList<>(recipeManager.getAllMatches(type, inventory, world));
+	@ModifyExpressionValue(
+			method = "updateInput",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/recipe/RecipeManager;getAllMatches(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/List;"
+			)
+	)
+	private List<StonecuttingRecipe> stonecutterRecipeTags$updateInput(List<StonecuttingRecipe> recipes) {
+		recipes = new ArrayList<>(recipes);
 
-		generateFakeRecipes(inputStack)
-				.forEachOrdered(toReturn::add);
+		stonecutterRecipeTags$generateFakeRecipes(this.inputStack)
+				.forEachOrdered(recipes::add);
 
-		return toReturn;
+		int available = this.inputStack.getCount();
+		recipes.removeIf(r -> r instanceof FakeStonecuttingRecipe fake && available < fake.inputItemCraftCount);
+
+		return recipes;
 	}
 
 	/**
-	 * (Re-)populates the output slot if the input stack size changes.
-	 * <p>
-	 * This isn't needed in vanilla because all recipes take exactly 1 item so the stack size changing would never change the output.
+	 * Always reset no matter how the item changes, because amounts are important now
 	 */
-	@Inject(method = "onContentChanged", at = @At(value = "TAIL"))
-	private void stonecutterRecipeTags$onContentChanged(Inventory inventory, CallbackInfo ci) {
-		this.populateResult();
+	@ModifyExpressionValue(
+			method = "onContentChanged",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"
+			)
+	)
+	private boolean stonecutterRecipeTags$onContentChanged(boolean sameItem) {
+		return false; // it's inverted after
 	}
 
 	/**
@@ -79,12 +95,20 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	 * <p>
 	 * This is used to test if an item should be shift-clicked into the input.
 	 */
-	@Redirect(method = "quickMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"))
-	public Optional<StonecuttingRecipe> stonecutterRecipeTags$transferSlot(RecipeManager recipeManager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world) {
-		return recipeManager.getFirstMatch(type, inventory, world)
-				.or(() -> generateFakeRecipes(inventory.getStack(0))
-						.filter(recipe -> recipe.matches(inventory, world))
+	@WrapOperation(
+			method = "quickMove",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"
+			)
+	)
+	private Optional<StonecuttingRecipe> stonecutterRecipeTags$transferSlot(
+			RecipeManager manager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world,
+			Operation<Optional<StonecuttingRecipe>> original) {
+		Optional<StonecuttingRecipe> recipe = original.call(manager, type, inventory, world);
+		return recipe.or(() -> stonecutterRecipeTags$generateFakeRecipes(inventory.getStack(0))
+						.filter(r -> r.matches(inventory, world))
 						.findFirst()
-				);
+		);
 	}
 }

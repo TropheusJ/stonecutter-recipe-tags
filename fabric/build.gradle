@@ -24,6 +24,9 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
+    // depended on in common
+    include("com.github.LlamaLad7:MixinExtras:0.1.1")
+
     afterEvaluate {
         testmodImplementation sourceSets.main.output
     }
