@@ -5,9 +5,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 /**
@@ -24,8 +24,8 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	public FakeStonecuttingRecipe(Item inputItem, int inputItemCraftCount, Item outputItem) {
 		super(
 				new Identifier(Utils.ID,
-						"fake_recipe_" + Registry.ITEM.getId(inputItem).toUnderscoreSeparatedString()
-								+ "_to_" + Registry.ITEM.getId(outputItem).toUnderscoreSeparatedString()),
+						"fake_recipe_" + Registries.ITEM.getId(inputItem).toUnderscoreSeparatedString()
+								+ "_to_" + Registries.ITEM.getId(outputItem).toUnderscoreSeparatedString()),
 				FAKE_RECIPE_GROUP,
 				Ingredient.ofItems(inputItem),
 				new ItemStack(outputItem, StonecutterRecipeTagManager.getItemCraftCount(outputItem))

@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,8 +27,6 @@ import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.StonecutterScreenHandler;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 @Mixin(StonecutterScreenHandler.class)
@@ -39,7 +40,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 		var inputItemCraftCount = StonecutterRecipeTagManager.getItemCraftCount(inputItem);
 		return StonecutterRecipeTagManager.getRecipeTags(inputStack)
 				.stream()
-				.flatMap((key) -> StreamSupport.stream(Registry.ITEM.iterateEntries(key).spliterator(), false))
+				.flatMap((key) -> StreamSupport.stream(Registries.ITEM.iterateEntries(key).spliterator(), false))
 				.map(RegistryEntry::value)
 				.filter(item -> !item.equals(inputItem))
 				.map(outputItem -> new FakeStonecuttingRecipe(inputItem, inputItemCraftCount, outputItem));
@@ -78,7 +79,7 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	 * <p>
 	 * This is used to test if an item should be shift-clicked into the input.
 	 */
-	@Redirect(method = "transferSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"))
+	@Redirect(method = "quickMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"))
 	public Optional<StonecuttingRecipe> stonecutterRecipeTags$transferSlot(RecipeManager recipeManager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world) {
 		return recipeManager.getFirstMatch(type, inventory, world)
 				.or(() -> generateFakeRecipes(inventory.getStack(0))
