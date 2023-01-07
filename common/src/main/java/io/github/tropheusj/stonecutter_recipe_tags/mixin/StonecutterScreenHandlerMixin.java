@@ -6,6 +6,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
@@ -47,10 +52,6 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 
 	@Shadow
 	private ItemStack inputStack;
-
-	@Shadow
-	@Final
-	private World world;
 
 	/**
 	 * Appends {@link FakeStonecuttingRecipe}s to the list of real recipes.
