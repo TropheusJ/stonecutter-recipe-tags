@@ -30,8 +30,6 @@ import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.StonecutterScreenHandler;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 @Mixin(StonecutterScreenHandler.class)
@@ -40,29 +38,9 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 		super(type, syncId);
 	}
 
-	private static Stream<FakeStonecuttingRecipe> stonecutterRecipeTags$generateFakeRecipes(ItemStack inputStack) {
-		Item inputItem = inputStack.getItem();
-		int inputItemCraftCount = StonecutterRecipeTagManager.getItemCraftCount(inputItem);
-		return StonecutterRecipeTagManager.getRecipeTags(inputStack)
-				.stream()
-				.flatMap((key) -> StreamSupport.stream(Registry.ITEM.iterateEntries(key).spliterator(), false))
-				.map(RegistryEntry::value)
-				.filter(item -> !item.equals(inputItem))
-				.map(outputItem -> new FakeStonecuttingRecipe(inputItem, inputItemCraftCount, outputItem));
-	}
-
 	@Shadow
 	private ItemStack inputStack;
 
-	@Shadow
-	@Final
-	private World world;
-
-	/**
-	 * Appends {@link FakeStonecuttingRecipe}s to the list of real recipes.
-	 * <p>
-	 * {@link StonecutterScreenHandlerOutputSlotMixin} tests for these recipe types when crafting.
-	 */
 	@ModifyExpressionValue(
 			method = "updateInput",
 			at = @At(
@@ -70,30 +48,26 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 					target = "Lnet/minecraft/recipe/RecipeManager;getAllMatches(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/List;"
 			)
 	)
-	private List<StonecuttingRecipe> stonecutterRecipeTags$updateInput(List<StonecuttingRecipe> recipes) {
+	private List<StonecuttingRecipe> stonecutterRecipeTags$addFakeRecipes(List<StonecuttingRecipe> recipes) {
 		recipes = new ArrayList<>(recipes);
-
-		stonecutterRecipeTags$generateFakeRecipes(this.inputStack)
-				.forEachOrdered(recipes::add);
-
-		int available = this.inputStack.getCount();
-		recipes.removeIf(r -> r instanceof FakeStonecuttingRecipe fake && available < fake.inputItemCraftCount);
-
+		recipes.addAll(StonecutterRecipeTagManager.makeFakeRecipes(inputStack));
 		return recipes;
 	}
 
-	/**
-	 * Always reset no matter how the item changes, because amounts are important now
-	 */
-	@ModifyExpressionValue(
+	@WrapOperation(
 			method = "onContentChanged",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"
 			)
 	)
-	private boolean stonecutterRecipeTags$onContentChanged(boolean sameItem) {
-		return false; // it's inverted after
+	private boolean stonecutterRecipeTags$checkProvidedFullBlocks(ItemStack newInput, Item oldItem, Operation<Boolean> original) {
+		boolean differentItem = !original.call(newInput, oldItem);
+		ItemStack oldInput = inputStack; // oldItem is from inputStack.getItem()
+		boolean couldCraftBefore = StonecutterRecipeTagManager.fullBlocksProvidedBy(oldInput) > 0;
+		boolean canCraftNow = StonecutterRecipeTagManager.fullBlocksProvidedBy(newInput) > 0;
+		boolean changeInCraftability = couldCraftBefore != canCraftNow;
+		return !(differentItem || changeInCraftability); // invert: original call is inverted, invert here too to simplify logic
 	}
 
 	/**
@@ -108,13 +82,14 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 					target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"
 			)
 	)
-	private Optional<StonecuttingRecipe> stonecutterRecipeTags$transferSlot(
+	private Optional<StonecuttingRecipe> stonecutterRecipeTags$fakeRecipesAllowShiftClick(
 			RecipeManager manager, RecipeType<StonecuttingRecipe> type, Inventory inventory, World world,
 			Operation<Optional<StonecuttingRecipe>> original) {
 		Optional<StonecuttingRecipe> recipe = original.call(manager, type, inventory, world);
-		return recipe.or(() -> stonecutterRecipeTags$generateFakeRecipes(inventory.getStack(0))
-						.filter(r -> r.matches(inventory, world))
-						.findFirst()
-		);
+		if (recipe.isPresent())
+			return recipe;
+		ItemStack input = inventory.getStack(0); // inv is a SimpleInventory containing the input to test with
+		List<FakeStonecuttingRecipe> recipes = StonecutterRecipeTagManager.makeFakeRecipes(input);
+		return recipes.isEmpty() ? Optional.empty() : Optional.of(recipes.get(0));
 	}
 }

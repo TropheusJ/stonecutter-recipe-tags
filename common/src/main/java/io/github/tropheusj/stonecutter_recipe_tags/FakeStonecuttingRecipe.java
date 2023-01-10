@@ -15,23 +15,17 @@ import net.minecraft.world.World;
  */
 public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	private static final String FAKE_RECIPE_GROUP = Utils.ID + "_fake_recipes";
-	public final int inputItemCraftCount;
-	private final Item inputItem;
+	/**
+	 * The size of this stack is the amount of input that will be consumed on crafting.
+	 */
+	public final ItemStack input;
 
 	/**
 	 * Creates fake recipe data so the recipe can be shown on screen and has reasonable defaults for mods that interact with it.
 	 */
-	public FakeStonecuttingRecipe(Item inputItem, int inputItemCraftCount, Item outputItem) {
-		super(
-				new Identifier(Utils.ID,
-						"fake_recipe_" + Registry.ITEM.getId(inputItem).toUnderscoreSeparatedString()
-								+ "_to_" + Registry.ITEM.getId(outputItem).toUnderscoreSeparatedString()),
-				FAKE_RECIPE_GROUP,
-				Ingredient.ofItems(inputItem),
-				new ItemStack(outputItem, StonecutterRecipeTagManager.getItemCraftCount(outputItem))
-		);
-		this.inputItem = inputItem;
-		this.inputItemCraftCount = inputItemCraftCount;
+	public FakeStonecuttingRecipe(ItemStack input, ItemStack output) {
+		super(makeId(input, output), FAKE_RECIPE_GROUP, Ingredient.ofStacks(input), output);
+		this.input = input;
 	}
 
 	/**
@@ -39,18 +33,21 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	 */
 	@Override
 	public boolean matches(Inventory inventory, World world) {
-		var inputStack = inventory.getStack(0);
-		return inputStack.getItem().equals(inputItem) && inputStack.getCount() >= inputItemCraftCount;
+		ItemStack actualInput = inventory.getStack(0);
+		return actualInput.getItem() == input.getItem()
+				&& actualInput.getCount() >= input.getCount();
 	}
 
 	/**
-	 * Rechecks with {@link FakeStonecuttingRecipe#matches} to prevent any item dupe shenanigans if {@link StonecutterScreenHandler#populateResult()} isn't called when the stack size changes.
+	 * Rechecks with {@link FakeStonecuttingRecipe#matches} to prevent any item dupe shenanigans
+	 * if {@link StonecutterScreenHandler#populateResult()} isn't called when the stack size changes.
 	 */
+	@SuppressWarnings("JavadocReference")
 	@Override
 	public ItemStack craft(Inventory inventory) {
-		if (this.matches(inventory, null))
-			return super.craft(inventory);
-		else return ItemStack.EMPTY;
+		if (!this.matches(inventory, null))
+			return ItemStack.EMPTY;
+		return super.craft(inventory);
 	}
 
 	/**
@@ -59,5 +56,11 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	@Override
 	public boolean isIgnoredInRecipeBook() {
 		return true;
+	}
+
+	private static Identifier makeId(ItemStack input, ItemStack output) {
+		String inId = Registry.ITEM.getId(input.getItem()).toUnderscoreSeparatedString();
+		String outId = Registry.ITEM.getId(output.getItem()).toUnderscoreSeparatedString();
+		return Utils.asId("fake_recipe_" + inId + "_to_" + outId);
 	}
 }

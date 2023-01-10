@@ -31,22 +31,16 @@ should be named `stonecutter_recipes`. File structure should look something like
 `resources/data/modid/tags/items/stonecutter_recipes/`<br>
 Any tag inside this folder will automatically be registered as a recipe tag.<br>
 
-#### Item Counts
-Every item has a count associated with it used in crafting. This number should
-be how many of this item is needed for one block to be made. For example,
-for plain blocks this number is 1, while for slabs it is 2. To add a custom amount,
-use `StonecutterRecipeTagManager#registerItemCraftCount`.<br>
-Example use case: quarter slabs would return 4.
+#### Full Block Amounts
+In order to craft, all items must be equated to full blocks. Each item has a linked amount
+that determines how many of it is needed to equal a full block. For most items, this will
+be 1. For slabs, it will be 2. For snow layers, it's 8. You can register your own with
+`StonecutterRecipeTagManager#setAmountForFullBlock`. If you need to cover a large amount
+of items, such as with an `instanceof`, you can instead register a provider with
+`StonecutterRecipeTagManager#registerFullBlockAmountProvider`.
+
+Example use case: quarter slabs would have a full block amount of 4.
 
 #### Advanced
-`StonecutterRecipeTagManager` has a few other methods which can be utilized.<br>
-`registerOrGet`/`register`: Allows for manual registration of recipe tags. Should not be
-needed, but is provided just in case. **Tags added through this method do not
-persist through resource reloads.**<br>
-`getRecipeTags`: Returns a list of all recipe tags the given item is in.<br>
-`registerItemCraftCount`: As stated above, allows for registration of
-custom crafting amounts.<br>
-`getItemCraftCount`: Gets the crafting count for the given item. If no custom
-amount has been set, returns 2 for slabs, and 1 for all other blocks.<br>
-`toSyncPacket`: Creates an S2C packet that can be sent to clients to manually
-synchronize their stonecutter recipe tags.<br>
+`StonecutterRecipeTagManager` has a few other methods which may be utilized.
+See the Javadocs for more information.
