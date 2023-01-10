@@ -45,11 +45,13 @@ loom {
             client()
             name "Testmod Client"
             source sourceSets.testmod
+            vmArg "-Dmixin.debug.export=true"
         }
         testmodServer {
             server()
             name "Testmod Server"
             source sourceSets.testmod
+            vmArg "-Dmixin.debug.export=true"
         }
     }
 }

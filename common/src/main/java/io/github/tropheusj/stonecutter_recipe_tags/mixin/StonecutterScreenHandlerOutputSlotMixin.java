@@ -37,7 +37,7 @@ public abstract class StonecutterScreenHandlerOutputSlotMixin {
 	private int stonecutterRecipeTags$removeCorrectAmount(int amount) {
 		Recipe<?> recipe = field_17639.output.getLastRecipe();
 		if (recipe instanceof FakeStonecuttingRecipe fake) {
-			return fake.inputItemCraftCount;
+			return fake.input.getCount();
 		} else {
 			return amount;
 		}
