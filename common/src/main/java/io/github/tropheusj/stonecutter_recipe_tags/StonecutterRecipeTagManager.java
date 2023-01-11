@@ -17,6 +17,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -200,7 +202,7 @@ public class StonecutterRecipeTagManager {
 		List<FakeStonecuttingRecipe> recipes = new ArrayList<>();
 		if (fullBlocksProvided <= 0) return recipes; // todo: partial crafting, ex. 1 slab <-> 1 slab instead of 2 <-> 2
 		for (TagKey<Item> recipeTag : getRecipeTags(input)) {
-			for (RegistryEntry<Item> entry : Registry.ITEM.iterateEntries(recipeTag)) {
+			for (RegistryEntry<Item> entry : Registries.ITEM.iterateEntries(recipeTag)) {
 				Item output = entry.value();
 				if (output == input) continue; // don't allow crafting into self
 				// each recipe only consumes the equivalent of 1 block

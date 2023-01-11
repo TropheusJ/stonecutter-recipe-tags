@@ -5,9 +5,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 /**
@@ -59,8 +59,8 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	}
 
 	private static Identifier makeId(ItemStack input, ItemStack output) {
-		String inId = Registry.ITEM.getId(input.getItem()).toUnderscoreSeparatedString();
-		String outId = Registry.ITEM.getId(output.getItem()).toUnderscoreSeparatedString();
+		String inId = Registries.ITEM.getId(input.getItem()).toUnderscoreSeparatedString();
+		String outId = Registries.ITEM.getId(output.getItem()).toUnderscoreSeparatedString();
 		return Utils.asId("fake_recipe_" + inId + "_to_" + outId);
 	}
 }
