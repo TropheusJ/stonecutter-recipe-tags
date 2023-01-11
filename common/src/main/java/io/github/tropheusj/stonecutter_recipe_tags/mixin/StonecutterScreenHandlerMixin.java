@@ -3,8 +3,6 @@ package io.github.tropheusj.stonecutter_recipe_tags.mixin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
@@ -14,11 +12,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.item.Item;
 
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import io.github.tropheusj.stonecutter_recipe_tags.FakeStonecuttingRecipe;
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
@@ -50,7 +46,11 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	)
 	private List<StonecuttingRecipe> stonecutterRecipeTags$addFakeRecipes(List<StonecuttingRecipe> recipes) {
 		recipes = new ArrayList<>(recipes);
-		recipes.addAll(StonecutterRecipeTagManager.makeFakeRecipes(inputStack));
+		List<Item> outputs = recipes.stream().map(r -> r.getOutput().getItem()).toList();
+		for (FakeStonecuttingRecipe recipe : StonecutterRecipeTagManager.makeFakeRecipes(inputStack)) {
+			if (!outputs.contains(recipe.getOutput().getItem()))
+				recipes.add(recipe);
+		}
 		return recipes;
 	}
 
