@@ -24,8 +24,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-    // depended on in common
-    include("com.github.LlamaLad7:MixinExtras:0.1.1")
+    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:$mixin_extras_version")))
 
     afterEvaluate {
         testmodImplementation sourceSets.main.output
