@@ -8,6 +8,10 @@ architectury {
     common(rootProject.forgeEnabled.toBoolean())
 }
 
+dependencies {
+    implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:$mixin_extras_version"))
+}
+
 loom {
     accessWidenerPath = file("src/main/resources/stonecutter_recipe_tags.accesswidener")
 }
