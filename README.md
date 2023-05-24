@@ -13,12 +13,23 @@ file counts and reducing lag.
 To get started, add this mod to your development environment.
 ```groovy
 repositories {
-  maven { url "https://api.modrinth.com/maven" }
+    maven { url = "https://mvn.devos.one/snapshots/" } // SCRT
+    maven { url = "https://jitpack.io/" } // Mixin Extras, used by SCRT
 }
 
 dependencies {
-  modImplementation "maven.modrinth:stonecutter_recipe_tags:<version>"
-  include "maven.modrinth:stonecutter_recipe_tags:<version>"
+    // loader - may be 'fabric', 'forge', or 'common'
+    // version - find it on the maven: https://mvn.devos.one/#/snapshots/io/github/tropheusj/stonecutter_recipe_tags
+    include(modImplementation("io.github.tropheusj.stonecutter_recipe_tags:<loader>:<version>"))
+
+    // for an Architectury project, you can use this in the root subprojects block to set up all 3
+    String platform = project.name
+    String scrt = "io.github.tropheusj.stonecutter_recipe_tags:$platform:<version>"
+    if (platform != "common") {
+        scrt += ".$platform"
+        include(scrt)
+    }
+    modImplementation(scrt)
 }
 ```
 Replace `<version>` with the latest version number found on [the mod page](https://modrinth.com/mod/stonecutter_recipe_tags).
