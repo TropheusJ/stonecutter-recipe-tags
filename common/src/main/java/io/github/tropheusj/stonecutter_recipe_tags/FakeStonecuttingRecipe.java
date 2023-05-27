@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.util.Identifier;
@@ -44,10 +45,10 @@ public class FakeStonecuttingRecipe extends StonecuttingRecipe {
 	 */
 	@SuppressWarnings("JavadocReference")
 	@Override
-	public ItemStack craft(Inventory inventory) {
+	public ItemStack craft(Inventory inventory, DynamicRegistryManager manager) {
 		if (!this.matches(inventory, null))
 			return ItemStack.EMPTY;
-		return super.craft(inventory);
+		return super.craft(inventory, manager);
 	}
 
 	/**

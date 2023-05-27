@@ -14,12 +14,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 

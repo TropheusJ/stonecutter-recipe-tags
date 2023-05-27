@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.github.tropheusj.stonecutter_recipe_tags.StonecutterRecipeTagManager;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 

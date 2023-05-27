@@ -9,10 +9,12 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 import net.minecraft.item.Item;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +40,10 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 	@Shadow
 	private ItemStack inputStack;
 
+	@Shadow
+	@Final
+	private World world;
+
 	@ModifyExpressionValue(
 			method = "updateInput",
 			at = @At(
@@ -46,10 +52,11 @@ public abstract class StonecutterScreenHandlerMixin extends ScreenHandler {
 			)
 	)
 	private List<StonecuttingRecipe> stonecutterRecipeTags$addFakeRecipes(List<StonecuttingRecipe> recipes) {
+		DynamicRegistryManager drm = this.world.getRegistryManager();
 		recipes = new ArrayList<>(recipes);
-		List<Item> outputs = recipes.stream().map(r -> r.getOutput().getItem()).toList();
+		List<Item> outputs = recipes.stream().map(r -> r.getOutput(drm).getItem()).toList();
 		for (FakeStonecuttingRecipe recipe : StonecutterRecipeTagManager.makeFakeRecipes(inputStack)) {
-			if (!outputs.contains(recipe.getOutput().getItem()))
+			if (!outputs.contains(recipe.getOutput(drm).getItem()))
 				recipes.add(recipe);
 		}
 		return recipes;
